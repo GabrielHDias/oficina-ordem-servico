@@ -1,5 +1,6 @@
 package com.oficina.os.controller;
 
+import com.oficina.os.enums.Prioridade;
 import com.oficina.os.enums.StatusOS;
 import com.oficina.os.model.OrdemServico;
 import com.oficina.os.service.OrdemServicoService;
@@ -52,6 +53,12 @@ public class OrdemServicoController {
     @GetMapping("/veiculo/{veiculoId}")
     public List<OrdemServico> listarPorVeiculo(@PathVariable Long veiculoId) {
         return ordemServicoService.listarPorVeiculo(veiculoId);
+    }
+
+    // GET /ordens/prioridade/ALTA
+    @GetMapping("/prioridade/{prioridade}")
+    public List<OrdemServico> listarPorPrioridade(@PathVariable Prioridade prioridade) {
+        return ordemServicoService.listarPorPrioridade(prioridade);
     }
 
     // POST /ordens

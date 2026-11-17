@@ -1,5 +1,6 @@
 package com.oficina.os.service;
 
+import com.oficina.os.enums.Prioridade;
 import com.oficina.os.enums.StatusOS;
 import com.oficina.os.model.Mecanico;
 import com.oficina.os.model.OrdemServico;
@@ -44,6 +45,10 @@ public class OrdemServicoService {
 
     public List<OrdemServico> listarPorVeiculo(Long veiculoId) {
         return ordemServicoRepository.findByVeiculoId(veiculoId);
+    }
+
+    public List<OrdemServico> listarPorPrioridade(Prioridade prioridade) {
+        return ordemServicoRepository.findByPrioridade(prioridade);
     }
 
     public OrdemServico buscarPorId(Long id) {
@@ -108,6 +113,14 @@ public class OrdemServicoService {
         return ordemServicoRepository.save(os);
     }
 
+    // REGRA 10: o valor ao concluir uma OS deve ser maior que zero
+    private void validarValorConclusao(BigDecimal valor) {
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "O valor da OS deve ser maior que zero");
+        }
+    }
+
     // REGRA 6: só é possível concluir uma OS que tenha mecânico
     private void validarMecanicoAtribuido(OrdemServico os) {
         if (os.getMecanico() == null) {
@@ -121,6 +134,7 @@ public class OrdemServicoService {
         OrdemServico os = buscarPorId(osId);
         validarOsNaoFinalizada(os); // usa a Regra 4
         validarMecanicoAtribuido(os); // usa a Regra 6
+        validarValorConclusao(valor); // usa a Regra 10
 
         os.setValor(valor);
         if (servicoExecutado != null && !servicoExecutado.isBlank()) {

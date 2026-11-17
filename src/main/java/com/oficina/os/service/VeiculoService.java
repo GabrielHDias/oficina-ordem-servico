@@ -2,6 +2,7 @@ package com.oficina.os.service;
 
 import com.oficina.os.model.Cliente;
 import com.oficina.os.model.Veiculo;
+import com.oficina.os.repository.OrdemServicoRepository;
 import com.oficina.os.repository.VeiculoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,14 @@ public class VeiculoService {
 
     private final VeiculoRepository veiculoRepository;
     private final ClienteService clienteService;
+    private final OrdemServicoRepository ordemServicoRepository;
 
-    public VeiculoService(VeiculoRepository veiculoRepository, ClienteService clienteService) {
+    public VeiculoService(VeiculoRepository veiculoRepository,
+                          ClienteService clienteService,
+                          OrdemServicoRepository ordemServicoRepository) {
         this.veiculoRepository = veiculoRepository;
         this.clienteService = clienteService;
+        this.ordemServicoRepository = ordemServicoRepository;
     }
 
     public List<Veiculo> listarTodos() {
@@ -63,7 +68,16 @@ public class VeiculoService {
 
     public void excluir(Long id) {
         Veiculo veiculo = buscarPorId(id);
+        validarSemOrdemDeServico(veiculo.getId());
         veiculoRepository.delete(veiculo);
+    }
+
+    // REGRA 9: veículo com ordem de serviço não pode ser excluído
+    private void validarSemOrdemDeServico(Long veiculoId) {
+        if (ordemServicoRepository.existsByVeiculoId(veiculoId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Veículo com ordem de serviço não pode ser excluído");
+        }
     }
 
     private void validarDados(Veiculo veiculo) {
