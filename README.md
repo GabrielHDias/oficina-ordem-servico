@@ -41,7 +41,10 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 server.error.include-message=always
+spring.web.error.include-message=always
 ```
+
+No Spring Boot 4.1.2 a mensagem de erro sai no JSON pela propriedade `spring.web.error.include-message`. A linha `server.error.include-message` é a do slide; nesta versão ela não é mais lida, então as duas ficam no arquivo.
 
 Com `ddl-auto=update` o Hibernate cria e atualiza as tabelas (`clientes`, `veiculos`, `mecanicos`, `ordens_servico`) ao subir a aplicação. Não é preciso rodar um script de tabelas.
 
@@ -51,7 +54,7 @@ Com `ddl-auto=update` o Hibernate cria e atualiza as tabelas (`clientes`, `veicu
 mvn spring-boot:run
 ```
 
-A API fica em `http://localhost:8080`. Envie `Content-Type: application/json` nos POST e PUT que têm corpo. As mensagens de erro (400 e 404) voltam no JSON, no campo `message` (ou `detail`, conforme o formato de erro do Spring).
+A API fica em `http://localhost:8080`. Envie `Content-Type: application/json` nos POST e PUT que têm corpo. As mensagens de erro (400 e 404) voltam no JSON, no campo `message`.
 
 Para só compilar:
 
